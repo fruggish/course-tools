@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brainstorming & Outlining — AI Writing Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F7F3EE;--paper-dark:#EDE7DC;--ink:#1C1A17;--ink-soft:#4A4640;--ink-muted:#8C8479;--terra:#C1440E;--terra-light:#F2E0D8;--sage:#4A7C59;--sage-light:#DDE8E2;--gold:#B08D4C;--gold-light:#F0E8D6;--rule:#D4C9BB;--red:#B33A2A;--radius:4px;--shadow:0 2px 12px rgba(28,26,23,0.08);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Source Sans 3',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;}
+nav{background:var(--ink);padding:0 40px;display:flex;align-items:center;height:58px;border-bottom:3px solid var(--terra);position:sticky;top:0;z-index:100;}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;}
+.nav-brand-mark{width:30px;height:30px;background:var(--terra);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.nav-brand-name{font-family:'Playfair Display',serif;font-size:16px;color:#fff;}
+.nav-links{display:flex;align-items:center;gap:2px;margin-left:32px;flex:1;flex-wrap:wrap;}
+.nav-link{color:rgba(255,255,255,0.55);font-size:12.5px;font-weight:500;padding:6px 11px;border-radius:3px;text-decoration:none;transition:all 0.15s;white-space:nowrap;}
+.nav-link:hover{background:rgba(255,255,255,0.08);color:#fff;}
+.nav-link.active{background:rgba(193,68,14,0.25);color:#fff;}
+.breadcrumb{padding:16px 40px 0;font-size:12px;color:var(--ink-muted);}
+.breadcrumb a{color:var(--ink-muted);text-decoration:none;}
+.breadcrumb a:hover{color:var(--terra);}
+.layout{display:grid;grid-template-columns:400px 1fr;min-height:calc(100vh - 58px);}
+.form-panel{background:#fff;border-right:1px solid var(--rule);padding:28px 26px;overflow-y:auto;}
+.panel-header{margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--rule);}
+.panel-eyebrow{font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--terra);margin-bottom:6px;}
+.panel-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--ink);}
+.panel-desc{font-size:13px;color:var(--ink-soft);line-height:1.6;margin-top:6px;}
+.field{margin-bottom:20px;}
+.field-label{font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink);margin-bottom:5px;display:flex;align-items:center;gap:6px;}
+.badge{font-size:9.5px;background:var(--terra-light);color:var(--terra);border-radius:3px;padding:1px 6px;text-transform:none;letter-spacing:0;font-weight:600;}
+.badge.opt{background:var(--paper-dark);color:var(--ink-muted);}
+.field-hint{font-size:12px;color:var(--ink-muted);margin-bottom:6px;line-height:1.5;}
+select,textarea,input[type="text"]{width:100%;font-family:'Source Sans 3',sans-serif;font-size:13.5px;color:var(--ink);background:var(--paper);border:1.5px solid var(--rule);border-radius:var(--radius);padding:9px 11px;outline:none;transition:border-color 0.18s,background 0.18s,box-shadow 0.18s;}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238C8479' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px;cursor:pointer;appearance:none;}
+select:focus,textarea:focus,input[type="text"]:focus{border-color:var(--terra);background:#fff;box-shadow:0 0 0 3px rgba(193,68,14,0.10);}
+textarea{resize:vertical;line-height:1.65;}
+.submit-btn{width:100%;padding:13px;background:var(--ink);color:#fff;border:none;border-radius:var(--radius);font-family:'Source Sans 3',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.submit-btn:hover{background:var(--terra);box-shadow:0 4px 16px rgba(193,68,14,0.28);transform:translateY(-1px);}
+.val-msg{font-size:11px;color:var(--red);margin-top:4px;display:none;}
+.field.error select,.field.error textarea,.field.error input{border-color:var(--red);}
+.field.error .val-msg{display:block;}
+.output-panel{padding:28px 32px;display:flex;flex-direction:column;overflow-y:auto;}
+.output-header{display:flex;align-items:center;margin-bottom:16px;}
+.output-header h2{font-family:'Playfair Display',serif;font-size:17px;color:var(--ink);display:flex;align-items:center;gap:8px;}
+.copy-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 13px;background:var(--terra);color:#fff;border:none;border-radius:var(--radius);font-family:'Source Sans 3',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.18s;margin-left:12px;position:relative;top:-1px;}
+.copy-btn:hover{background:#A33A0C;}
+.copy-btn.copied{background:var(--sage);}
+.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--ink-muted);text-align:center;padding:48px;}
+.es-icon{font-size:48px;margin-bottom:16px;opacity:0.35;}
+.es-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--ink-soft);margin-bottom:8px;}
+.es-desc{font-size:13.5px;max-width:280px;line-height:1.65;}
+.step-list{margin-top:20px;text-align:left;font-size:12.5px;color:var(--ink-soft);line-height:2.2;}
+.step-list span{display:block;}
+.prompt-box{background:#fff;border:1.5px solid var(--rule);border-radius:var(--radius);padding:24px 28px;flex:1;font-size:13px;line-height:1.85;color:var(--ink);white-space:pre-wrap;font-family:'Source Sans 3',sans-serif;min-height:300px;resize:none;width:100%;outline:none;cursor:text;box-shadow:var(--shadow);}
+.copy-hint{display:none;margin-top:8px;font-size:12px;color:var(--terra);font-weight:600;}
+@media(max-width:900px){.layout{grid-template-columns:1fr;}.form-panel{border-right:none;border-bottom:1px solid var(--rule);}}
+@media(max-width:540px){nav{padding:0 16px;}.nav-links{display:none;}.form-panel,.output-panel{padding:20px 16px;}.breadcrumb{padding:12px 16px 0;}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-brand"><div class="nav-brand-mark">✍</div><span class="nav-brand-name">AI Writing Tools</span></a>
+  <div class="nav-links">
+    <a href="brainstorm.html" class="nav-link active">Brainstorm</a>
+    <a href="thesis.html" class="nav-link">Thesis</a>
+    <a href="drafting.html" class="nav-link">Drafting</a>
+    <a href="revision.html" class="nav-link">Revision</a>
+    <a href="argument.html" class="nav-link">Argument</a>
+    <a href="audience.html" class="nav-link">Audience</a>
+    <a href="research.html" class="nav-link">Research</a>
+    <a href="citation.html" class="nav-link">Citation</a>
+    <a href="peerreview.html" class="nav-link">Peer Review</a>
+  </div>
+</nav>
+<div class="breadcrumb"><a href="index.html">AI Writing Tools</a> / Brainstorming & Outlining</div>
+<div class="layout">
+  <div class="form-panel">
+    <div class="panel-header">
+      <div class="panel-eyebrow">Tool 01</div>
+      <div class="panel-title">💡 Brainstorming & Outlining</div>
+      <div class="panel-desc">Use this before you draft. The AI will ask you questions to help you discover and organize your own ideas — it won't give you the ideas.</div>
+    </div>
+
+    <div class="field" id="field-type">
+      <div class="field-label">Assignment Type <span class="badge">required</span></div>
+      <select id="select-type" onchange="clearErr('field-type')">
+        <option value="">— Select your assignment type —</option>
+        <option value="Personal Narrative">Personal Narrative</option>
+        <option value="Argumentative Essay">Argumentative Essay</option>
+        <option value="Rhetorical Analysis">Rhetorical Analysis</option>
+        <option value="Research Paper">Research Paper</option>
+      </select>
+      <div class="val-msg" id="val-type">Please select your assignment type.</div>
+    </div>
+
+    <div class="field" id="field-prompt">
+      <div class="field-label">Your Assignment Prompt <span class="badge">required</span></div>
+      <div class="field-hint">Paste or summarize what your instructor asked you to write about.</div>
+      <textarea id="input-prompt" rows="3" placeholder="e.g. Write an argumentative essay about a social issue that matters to you."></textarea>
+      <div class="val-msg" id="val-prompt">Please describe your assignment prompt.</div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">What You're Working With <span class="badge opt">optional</span></div>
+      <div class="field-hint">Any ideas, topics, or experiences you're already considering. Rough is fine.</div>
+      <textarea id="input-ideas" rows="3" placeholder="e.g. I'm thinking about writing about food insecurity on campus, or maybe social media and mental health..."></textarea>
+    </div>
+
+    <div class="field">
+      <div class="field-label">What You're Stuck On <span class="badge opt">optional</span></div>
+      <div class="field-hint">Narrowing a topic? Finding an angle? Figuring out structure?</div>
+      <textarea id="input-stuck" rows="2" placeholder="e.g. I have too many ideas and can't pick one, or I don't know how to organize my argument."></textarea>
+    </div>
+
+    <button class="submit-btn" onclick="buildPrompt()">⚡ Build My Prompt</button>
+  </div>
+
+  <div class="output-panel">
+    <div class="output-header">
+      <h2>📄 Your Prompt <button class="copy-btn" id="copy-btn" onclick="copyPrompt()" style="display:none;">📋 Copy Prompt</button></h2>
+    </div>
+    <div id="empty-state" class="empty-state">
+      <div class="es-icon">💡</div>
+      <div class="es-title">Your prompt will appear here</div>
+      <div class="es-desc">Fill in the fields and click Build My Prompt.</div>
+      <div class="step-list">
+        <span>1. Fill in the fields</span>
+        <span>2. Click Build My Prompt</span>
+        <span>3. Copy and paste into Claude or ChatGPT</span>
+        <span>4. Answer its questions — your answers are the work</span>
+      </div>
+    </div>
+    <textarea id="prompt-output" class="prompt-box" style="display:none;" readonly onclick="this.select()"></textarea>
+    <div id="copy-hint" class="copy-hint">✓ Text selected — press Ctrl+C (or Cmd+C) to copy</div>
+  </div>
+</div>
+
+<script>
+function clearErr(id) { const el = document.getElementById(id); if (el) el.classList.remove('error'); }
+function copyPrompt() {
+  const box = document.getElementById('prompt-output');
+  const btn = document.getElementById('copy-btn');
+  const hint = document.getElementById('copy-hint');
+  if (!box) return;
+  box.focus(); box.select(); box.setSelectionRange(0, 99999);
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(box.value).then(() => {
+      btn.textContent = '✓ Copied!'; btn.classList.add('copied');
+      if (hint) hint.style.display = 'none';
+      setTimeout(() => { btn.textContent = '📋 Copy Prompt'; btn.classList.remove('copied'); }, 2200);
+    }).catch(() => {
+      btn.textContent = '✓ Selected'; btn.classList.add('copied');
+      if (hint) hint.style.display = 'block';
+      setTimeout(() => { btn.textContent = '📋 Copy Prompt'; btn.classList.remove('copied'); }, 3000);
+    });
+  } else {
+    btn.textContent = '✓ Selected'; btn.classList.add('copied');
+    if (hint) hint.style.display = 'block';
+    setTimeout(() => { btn.textContent = '📋 Copy Prompt'; btn.classList.remove('copied'); }, 3000);
+  }
+}
+function showPrompt(text) {
+  document.getElementById('empty-state').style.display = 'none';
+  const box = document.getElementById('prompt-output');
+  box.style.display = 'block'; box.value = text;
+  const btn = document.getElementById('copy-btn');
+  btn.style.display = 'inline-flex'; btn.textContent = '📋 Copy Prompt'; btn.classList.remove('copied');
+}
+function buildPrompt() {
+  const type = document.getElementById('select-type').value;
+  const prompt = document.getElementById('input-prompt').value.trim();
+  const ideas = document.getElementById('input-ideas').value.trim();
+  const stuck = document.getElementById('input-stuck').value.trim();
+  let ok = true;
+  if (!type) { document.getElementById('field-type').classList.add('error'); ok = false; }
+  if (!prompt) { document.getElementById('field-prompt').classList.add('error'); ok = false; }
+  if (!ok) return;
+  const ideasBlock = ideas ? `\nIDEAS I'M CONSIDERING:\n${ideas}\n` : '';
+  const stuckBlock = stuck ? `\nWHAT I'M STUCK ON:\n${stuck}\n` : '';
+  showPrompt(`You are a writing coach helping a college composition student brainstorm and outline a ${type}. Your role is to ask questions and help the student think — not to generate ideas for them or write any part of their essay.
+
+COURSE POLICY: You may ask questions, suggest organizational strategies, and help the student evaluate their own ideas. You may not write the student's thesis, outline, or paragraphs for them. If the student asks you to write something, redirect them with a question instead.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STUDENT CONTEXT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ASSIGNMENT TYPE: ${type}
+ASSIGNMENT PROMPT: ${prompt}
+${ideasBlock}${stuckBlock}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+YOUR TASK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Start by asking 2–3 focused questions to help the student clarify what they actually want to write about. Base your questions on what they've shared above.
+2. After they respond, help them narrow their topic and identify a potential angle or focus — through more questions, not by deciding for them.
+3. Once they have a direction, help them think through how to organize their ideas. Ask them to tell you what their main points might be before you suggest any structure.
+4. If they get stuck, offer 2–3 possible directions as options — never as instructions — and ask which feels most like their own thinking.
+
+Do not write the student's thesis, outline, introduction, or any part of their essay. Your job is to help them think, not to think for them.`);
+}
+</script>
+</body>
+</html>

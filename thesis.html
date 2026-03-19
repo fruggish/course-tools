@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thesis Development — AI Writing Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F7F3EE;--paper-dark:#EDE7DC;--ink:#1C1A17;--ink-soft:#4A4640;--ink-muted:#8C8479;--terra:#C1440E;--terra-light:#F2E0D8;--sage:#4A7C59;--sage-light:#DDE8E2;--gold:#B08D4C;--rule:#D4C9BB;--red:#B33A2A;--radius:4px;--shadow:0 2px 12px rgba(28,26,23,0.08);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Source Sans 3',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;}
+nav{background:var(--ink);padding:0 40px;display:flex;align-items:center;height:58px;border-bottom:3px solid var(--terra);position:sticky;top:0;z-index:100;}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;}
+.nav-brand-mark{width:30px;height:30px;background:var(--terra);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.nav-brand-name{font-family:'Playfair Display',serif;font-size:16px;color:#fff;}
+.nav-links{display:flex;align-items:center;gap:2px;margin-left:32px;flex:1;flex-wrap:wrap;}
+.nav-link{color:rgba(255,255,255,0.55);font-size:12.5px;font-weight:500;padding:6px 11px;border-radius:3px;text-decoration:none;transition:all 0.15s;white-space:nowrap;}
+.nav-link:hover{background:rgba(255,255,255,0.08);color:#fff;}
+.nav-link.active{background:rgba(193,68,14,0.25);color:#fff;}
+.breadcrumb{padding:16px 40px 0;font-size:12px;color:var(--ink-muted);}
+.breadcrumb a{color:var(--ink-muted);text-decoration:none;}
+.breadcrumb a:hover{color:var(--terra);}
+.layout{display:grid;grid-template-columns:400px 1fr;min-height:calc(100vh - 58px);}
+.form-panel{background:#fff;border-right:1px solid var(--rule);padding:28px 26px;overflow-y:auto;}
+.panel-header{margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--rule);}
+.panel-eyebrow{font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--terra);margin-bottom:6px;}
+.panel-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--ink);}
+.panel-desc{font-size:13px;color:var(--ink-soft);line-height:1.6;margin-top:6px;}
+.field{margin-bottom:20px;}
+.field-label{font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink);margin-bottom:5px;display:flex;align-items:center;gap:6px;}
+.badge{font-size:9.5px;background:var(--terra-light);color:var(--terra);border-radius:3px;padding:1px 6px;text-transform:none;letter-spacing:0;font-weight:600;}
+.badge.opt{background:var(--paper-dark);color:var(--ink-muted);}
+.field-hint{font-size:12px;color:var(--ink-muted);margin-bottom:6px;line-height:1.5;}
+select,textarea,input[type="text"]{width:100%;font-family:'Source Sans 3',sans-serif;font-size:13.5px;color:var(--ink);background:var(--paper);border:1.5px solid var(--rule);border-radius:var(--radius);padding:9px 11px;outline:none;transition:border-color 0.18s,background 0.18s,box-shadow 0.18s;}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238C8479' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px;cursor:pointer;appearance:none;}
+select:focus,textarea:focus,input[type="text"]:focus{border-color:var(--terra);background:#fff;box-shadow:0 0 0 3px rgba(193,68,14,0.10);}
+textarea{resize:vertical;line-height:1.65;}
+.submit-btn{width:100%;padding:13px;background:var(--ink);color:#fff;border:none;border-radius:var(--radius);font-family:'Source Sans 3',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.submit-btn:hover{background:var(--terra);box-shadow:0 4px 16px rgba(193,68,14,0.28);transform:translateY(-1px);}
+.val-msg{font-size:11px;color:var(--red);margin-top:4px;display:none;}
+.field.error select,.field.error textarea,.field.error input{border-color:var(--red);}
+.field.error .val-msg{display:block;}
+.output-panel{padding:28px 32px;display:flex;flex-direction:column;overflow-y:auto;}
+.output-header{display:flex;align-items:center;margin-bottom:16px;}
+.output-header h2{font-family:'Playfair Display',serif;font-size:17px;color:var(--ink);display:flex;align-items:center;gap:8px;}
+.copy-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 13px;background:var(--terra);color:#fff;border:none;border-radius:var(--radius);font-family:'Source Sans 3',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.18s;margin-left:12px;position:relative;top:-1px;}
+.copy-btn:hover{background:#A33A0C;}
+.copy-btn.copied{background:var(--sage);}
+.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--ink-muted);text-align:center;padding:48px;}
+.es-icon{font-size:48px;margin-bottom:16px;opacity:0.35;}
+.es-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--ink-soft);margin-bottom:8px;}
+.es-desc{font-size:13.5px;max-width:280px;line-height:1.65;}
+.step-list{margin-top:20px;text-align:left;font-size:12.5px;color:var(--ink-soft);line-height:2.2;}
+.step-list span{display:block;}
+.prompt-box{background:#fff;border:1.5px solid var(--rule);border-radius:var(--radius);padding:24px 28px;flex:1;font-size:13px;line-height:1.85;color:var(--ink);white-space:pre-wrap;font-family:'Source Sans 3',sans-serif;min-height:300px;resize:none;width:100%;outline:none;cursor:text;box-shadow:var(--shadow);}
+.copy-hint{display:none;margin-top:8px;font-size:12px;color:var(--terra);font-weight:600;}
+@media(max-width:900px){.layout{grid-template-columns:1fr;}.form-panel{border-right:none;border-bottom:1px solid var(--rule);}}
+@media(max-width:540px){nav{padding:0 16px;}.nav-links{display:none;}.form-panel,.output-panel{padding:20px 16px;}.breadcrumb{padding:12px 16px 0;}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="nav-brand"><div class="nav-brand-mark">✍</div><span class="nav-brand-name">AI Writing Tools</span></a>
+  <div class="nav-links">
+    <a href="brainstorm.html" class="nav-link">Brainstorm</a>
+    <a href="thesis.html" class="nav-link active">Thesis</a>
+    <a href="drafting.html" class="nav-link">Drafting</a>
+    <a href="revision.html" class="nav-link">Revision</a>
+    <a href="argument.html" class="nav-link">Argument</a>
+    <a href="audience.html" class="nav-link">Audience</a>
+    <a href="research.html" class="nav-link">Research</a>
+    <a href="citation.html" class="nav-link">Citation</a>
+    <a href="peerreview.html" class="nav-link">Peer Review</a>
+  </div>
+</nav>
+<div class="breadcrumb"><a href="index.html">AI Writing Tools</a> / Thesis Development</div>
+<div class="layout">
+  <div class="form-panel">
+    <div class="panel-header">
+      <div class="panel-eyebrow">Tool 02</div>
+      <div class="panel-title">🎯 Thesis Development</div>
+      <div class="panel-desc">The AI will help you test and sharpen your claim. It may show you an example of a strong thesis to illustrate a point — but your thesis has to be yours.</div>
+    </div>
+
+    <div class="field" id="field-type">
+      <div class="field-label">Assignment Type <span class="badge">required</span></div>
+      <select id="select-type" onchange="clearErr('field-type')">
+        <option value="">— Select your assignment type —</option>
+        <option value="Personal Narrative">Personal Narrative</option>
+        <option value="Argumentative Essay">Argumentative Essay</option>
+        <option value="Rhetorical Analysis">Rhetorical Analysis</option>
+        <option value="Research Paper">Research Paper</option>
+      </select>
+      <div class="val-msg" id="val-type">Please select your assignment type.</div>
+    </div>
+
+    <div class="field" id="field-topic">
+      <div class="field-label">Your Topic or Focus <span class="badge">required</span></div>
+      <div class="field-hint">What is your essay generally about?</div>
+      <textarea id="input-topic" rows="2" placeholder="e.g. The way social media platforms use algorithmic feeds affects how teenagers form their political opinions."></textarea>
+      <div class="val-msg" id="val-topic">Please describe your topic.</div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">Your Current Thesis Attempt <span class="badge opt">optional</span></div>
+      <div class="field-hint">Paste what you have, even if it's rough or you know it's weak. If you don't have one yet, leave this blank.</div>
+      <textarea id="input-thesis" rows="3" placeholder="e.g. Social media is bad for teenagers."></textarea>
+    </div>
+
+    <div class="field">
+      <div class="field-label">What You Want to Argue <span class="badge opt">optional</span></div>
+      <div class="field-hint">In plain language, what's the point you want to make?</div>
+      <textarea id="input-position" rows="2" placeholder="e.g. I want to argue that the algorithm specifically amplifies extreme political content because it's more engaging, not because it's accurate."></textarea>
+    </div>
+
+    <button class="submit-btn" onclick="buildPrompt()">⚡ Build My Prompt</button>
+  </div>
+
+  <div class="output-panel">
+    <div class="output-header">
+      <h2>📄 Your Prompt <button class="copy-btn" id="copy-btn" onclick="copyPrompt()" style="display:none;">📋 Copy Prompt</button></h2>
+    </div>
+    <div id="empty-state" class="empty-state">
+      <div class="es-icon">🎯</div>
+      <div class="es-title">Your prompt will appear here</div>
+      <div class="es-desc">Fill in the fields and click Build My Prompt.</div>
+      <div class="step-list">
+        <span>1. Fill in the fields</span>
+        <span>2. Click Build My Prompt</span>
+        <span>3. Copy and paste into Claude or ChatGPT</span>
+        <span>4. Work through the feedback — then revise your thesis yourself</span>
+      </div>
+    </div>
+    <textarea id="prompt-output" class="prompt-box" style="display:none;" readonly onclick="this.select()"></textarea>
+    <div id="copy-hint" class="copy-hint">✓ Text selected — press Ctrl+C (or Cmd+C) to copy</div>
+  </div>
+</div>
+
+<script>
+function clearErr(id){const el=document.getElementById(id);if(el)el.classList.remove('error');}
+function copyPrompt(){const box=document.getElementById('prompt-output');const btn=document.getElementById('copy-btn');const hint=document.getElementById('copy-hint');if(!box)return;box.focus();box.select();box.setSelectionRange(0,99999);if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(box.value).then(()=>{btn.textContent='✓ Copied!';btn.classList.add('copied');if(hint)hint.style.display='none';setTimeout(()=>{btn.textContent='📋 Copy Prompt';btn.classList.remove('copied');},2200);}).catch(()=>{btn.textContent='✓ Selected';btn.classList.add('copied');if(hint)hint.style.display='block';setTimeout(()=>{btn.textContent='📋 Copy Prompt';btn.classList.remove('copied');},3000);});}else{btn.textContent='✓ Selected';btn.classList.add('copied');if(hint)hint.style.display='block';setTimeout(()=>{btn.textContent='📋 Copy Prompt';btn.classList.remove('copied');},3000);}}
+function showPrompt(text){document.getElementById('empty-state').style.display='none';const box=document.getElementById('prompt-output');box.style.display='block';box.value=text;const btn=document.getElementById('copy-btn');btn.style.display='inline-flex';btn.textContent='📋 Copy Prompt';btn.classList.remove('copied');}
+function buildPrompt(){
+  const type=document.getElementById('select-type').value;
+  const topic=document.getElementById('input-topic').value.trim();
+  const thesis=document.getElementById('input-thesis').value.trim();
+  const position=document.getElementById('input-position').value.trim();
+  let ok=true;
+  if(!type){document.getElementById('field-type').classList.add('error');ok=false;}
+  if(!topic){document.getElementById('field-topic').classList.add('error');ok=false;}
+  if(!ok)return;
+  const thesisBlock=thesis?`\nSTUDENT'S CURRENT THESIS ATTEMPT:\n"${thesis}"\n`:'';
+  const positionBlock=position?`\nWHAT THE STUDENT WANTS TO ARGUE:\n${position}\n`:'';
+  showPrompt(`You are a writing coach helping a college composition student develop a thesis for a ${type}. Your job is to ask questions, identify weaknesses, and give feedback — not to write the thesis for them.
+
+COURSE POLICY: You may show the student one example of a strong thesis to illustrate what "arguable and specific" looks like — but this example must be on a completely different topic from theirs. You may not write, complete, or rewrite their actual thesis. If they ask you to do that, redirect them with a question.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STUDENT CONTEXT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ASSIGNMENT TYPE: ${type}
+TOPIC / FOCUS: ${topic}
+${thesisBlock}${positionBlock}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+YOUR TASK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Evaluate what the student has shared. If they have a thesis attempt, diagnose its specific weaknesses (too broad, not arguable, missing the "so what," no preview of reasoning).
+2. Ask 2–3 targeted questions to help them sharpen it — based on what's actually weak, not generic thesis advice.
+3. If they have no thesis yet, help them move from their topic/position toward a claim by asking questions about what they want to prove and why it matters.
+4. If helpful, show ONE example thesis on a completely different topic to illustrate a specific quality (e.g. what "arguable" looks like). Label it clearly as an example on a different topic.
+5. After each exchange, ask the student to try a revision themselves before you give more feedback.
+
+A strong thesis for this assignment type should be: arguable (someone could reasonably disagree), specific (not a statement of fact or broad generalization), and meaningful (it makes a claim worth defending).`);
+}
+</script>
+</body>
+</html>
