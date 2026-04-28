@@ -107,14 +107,6 @@ select:focus, textarea:focus, input[type="text"]:focus {
   border-color: var(--terra); background: #fff; box-shadow: 0 0 0 3px rgba(193,68,14,0.10);
 }
 textarea { resize: vertical; line-height: 1.65; }
-.chips-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip {
-  padding: 5px 12px; border: 1.5px solid var(--rule); border-radius: 20px;
-  font-size: 12.5px; font-weight: 500; color: var(--ink-soft); background: var(--paper);
-  cursor: pointer; transition: all 0.15s; user-select: none;
-}
-.chip.selected { background: var(--terra); border-color: var(--terra); color: #fff; }
-.chip:hover:not(.selected) { border-color: var(--terra); color: var(--terra); background: var(--terra-light); }
 .submit-btn {
   width: 100%; padding: 13px; background: var(--ink); color: #fff; border: none;
   border-radius: var(--radius); font-family: 'Source Sans 3', sans-serif;
@@ -168,7 +160,6 @@ textarea { resize: vertical; line-height: 1.65; }
   .form-panel, .output-panel { padding: 20px 16px; }
   .breadcrumb { padding: 12px 16px 0; }
 }
-
 </style>
 </head>
 <body>
@@ -184,7 +175,7 @@ textarea { resize: vertical; line-height: 1.65; }
     <a href="research.html" class="nav-link">Research</a>
     <a href="citation.html" class="nav-link">Citation</a>
     <a href="peerreview.html" class="nav-link active">Peer Review</a>
-    <a href="grammar.html" class="nav-link">Grammar</a>
+     <a href="grammar.html" class="nav-link">Grammar</a>
   </div>
 </nav>
 <div class="breadcrumb"><a href="index.html">AI Writing Tools</a> / Peer Review Prep</div>
@@ -195,7 +186,7 @@ textarea { resize: vertical; line-height: 1.65; }
       <div class="panel-title">🔄 Peer Review Prep</div>
       <div class="panel-desc">Answer structured questions about your own draft before you share it. Find blind spots before your peers — or your instructor — do.</div>
     </div>
-    
+
     <div class="field" id="field-type">
       <div class="field-label">Assignment Type <span class="badge">required</span></div>
       <select id="select-type" onchange="clearErr('field-type')">
@@ -207,20 +198,35 @@ textarea { resize: vertical; line-height: 1.65; }
       </select>
       <div class="val-msg" id="val-type">Please select your assignment type.</div>
     </div>
+
     <div class="field" id="field-draft">
       <div class="field-label">Your Draft <span class="badge">required</span></div>
       <div class="field-hint">Paste your full draft or the most complete version you have.</div>
       <textarea id="input-draft" rows="8" placeholder="Paste your draft here..."></textarea>
       <div class="val-msg" id="val-draft">Please paste your draft.</div>
     </div>
-    <div class="field" id="field-self">
-      <div class="field-label">Your Self-Assessment <span class="badge">required</span></div>
-      <div class="field-hint">Answer these before you submit: What are you most confident about? What do you think is weakest? What question do you most want your reader to answer?</div>
-      <textarea id="input-self" rows="4" placeholder="e.g. I'm confident in my introduction and thesis. I think my third body paragraph is weak — it feels like a list of facts without analysis. I want to know if my conclusion feels complete or too abrupt."></textarea>
-      <div class="val-msg" id="val-self">Please share your self-assessment.</div>
+
+    <div class="field">
+      <div class="field-label">What You're Most Confident About <span class="badge opt">optional</span></div>
+      <div class="field-hint">Which part of your draft do you think is working well?</div>
+      <textarea id="input-confident" rows="2" placeholder="e.g. I'm confident in my introduction and thesis — I think the claim is clear and arguable."></textarea>
     </div>
+
+    <div class="field">
+      <div class="field-label">What You Think Is Weakest <span class="badge opt">optional</span></div>
+      <div class="field-hint">Which part are you least satisfied with, and why?</div>
+      <textarea id="input-weakest" rows="2" placeholder="e.g. My third body paragraph feels like a list of facts without analysis — I'm not sure how to connect it back to my thesis."></textarea>
+    </div>
+
+    <div class="field">
+      <div class="field-label">Question You Most Want Answered <span class="badge opt">optional</span></div>
+      <div class="field-hint">What's the one thing you most want a reader to tell you?</div>
+      <textarea id="input-question" rows="2" placeholder="e.g. Does my conclusion feel complete, or does it end too abruptly?"></textarea>
+    </div>
+
     <button class="submit-btn" onclick="buildPrompt()">⚡ Build My Prompt</button>
   </div>
+
   <div class="output-panel">
     <div class="output-header">
       <h2>📄 Your Prompt <button class="copy-btn" id="copy-btn" onclick="copyPrompt()" style="display:none;">📋 Copy Prompt</button></h2>
@@ -240,24 +246,82 @@ textarea { resize: vertical; line-height: 1.65; }
     <div id="copy-hint" class="copy-hint">✓ Text selected — press Ctrl+C (or Cmd+C) to copy</div>
   </div>
 </div>
+
 <script>
+function clearErr(id) { const el = document.getElementById(id); if (el) el.classList.remove('error'); }
 
-function clearErr(id){const el=document.getElementById(id);if(el)el.classList.remove('error');}
-function copyPrompt(){const box=document.getElementById('prompt-output');const btn=document.getElementById('copy-btn');const hint=document.getElementById('copy-hint');if(!box)return;box.focus();box.select();box.setSelectionRange(0,99999);if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(box.value).then(()=>{btn.textContent='✓ Copied!';btn.classList.add('copied');if(hint)hint.style.display='none';setTimeout(()=>{btn.textContent='📋 Copy Prompt';btn.classList.remove('copied');},2200);}).catch(()=>{btn.textContent='✓ Selected';btn.classList.add('copied');if(hint)hint.style.display='block';setTimeout(()=>{btn.textContent='📋 Copy Prompt';btn.classList.remove('copied');},3000);});}else{btn.textContent='✓ Selected';btn.classList.add('copied');if(hint)hint.style.display='block';setTimeout(()=>{btn.textContent='📋 Copy Prompt';btn.classList.remove('copied');},3000);}}
-function showPrompt(text){document.getElementById('empty-state').style.display='none';const box=document.getElementById('prompt-output');box.style.display='block';box.value=text;const btn=document.getElementById('copy-btn');btn.style.display='inline-flex';btn.textContent='📋 Copy Prompt';btn.classList.remove('copied');}
+function copyPrompt() {
+  const box = document.getElementById('prompt-output');
+  const btn = document.getElementById('copy-btn');
+  const hint = document.getElementById('copy-hint');
+  if (!box) return;
+  box.focus(); box.select(); box.setSelectionRange(0, 99999);
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(box.value).then(() => {
+      btn.textContent = '✓ Copied!'; btn.classList.add('copied');
+      if (hint) hint.style.display = 'none';
+      setTimeout(() => { btn.textContent = '📋 Copy Prompt'; btn.classList.remove('copied'); }, 2200);
+    }).catch(() => {
+      btn.textContent = '✓ Selected'; btn.classList.add('copied');
+      if (hint) hint.style.display = 'block';
+      setTimeout(() => { btn.textContent = '📋 Copy Prompt'; btn.classList.remove('copied'); }, 3000);
+    });
+  } else {
+    btn.textContent = '✓ Selected'; btn.classList.add('copied');
+    if (hint) hint.style.display = 'block';
+    setTimeout(() => { btn.textContent = '📋 Copy Prompt'; btn.classList.remove('copied'); }, 3000);
+  }
+}
 
-function buildPrompt(){
-  const type=document.getElementById('select-type').value;
-  const draft=document.getElementById('input-draft').value.trim();
-  const self=document.getElementById('input-self').value.trim();
-  let ok=true;
-  if(!type){document.getElementById('field-type').classList.add('error');ok=false;}
-  if(!draft){document.getElementById('field-draft').classList.add('error');ok=false;}
-  if(!self){document.getElementById('field-self').classList.add('error');ok=false;}
-  if(!ok)return;
+function showPrompt(text) {
+  document.getElementById('empty-state').style.display = 'none';
+  const box = document.getElementById('prompt-output');
+  box.style.display = 'block'; box.value = text;
+  const btn = document.getElementById('copy-btn');
+  btn.style.display = 'inline-flex'; btn.textContent = '📋 Copy Prompt'; btn.classList.remove('copied');
+}
+
+function buildPrompt() {
+  const type = document.getElementById('select-type').value;
+  const draft = document.getElementById('input-draft').value.trim();
+  const confident = document.getElementById('input-confident').value.trim();
+  const weakest = document.getElementById('input-weakest').value.trim();
+  const question = document.getElementById('input-question').value.trim();
+
+  let ok = true;
+  if (!type) { document.getElementById('field-type').classList.add('error'); ok = false; }
+  if (!draft) { document.getElementById('field-draft').classList.add('error'); ok = false; }
+  if (!ok) return;
+
+  const confidentBlock = confident ? `WHAT THEY'RE MOST CONFIDENT ABOUT:\n${confident}\n\n` : '';
+  const weakestBlock = weakest ? `WHAT THEY THINK IS WEAKEST:\n${weakest}\n\n` : '';
+  const questionBlock = question ? `QUESTION THEY MOST WANT ANSWERED:\n${question}\n\n` : '';
+
+  const selfAssessmentBlock = (confidentBlock || weakestBlock || questionBlock)
+    ? `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STUDENT'S SELF-ASSESSMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+${confidentBlock}${weakestBlock}${questionBlock}`
+    : '';
+
   showPrompt(`You are a writing coach helping a college composition student prepare their ${type} for peer review. Your job is to help them identify blind spots in their own draft — things they think are working but may not be, and problems they haven't noticed yet.
 
-COURSE POLICY: You may give detailed feedback and ask the student pointed questions about their own choices. You may not rewrite any part of the draft. If you identify a problem, explain it clearly and ask the student how they would address it.
+COURSE POLICY: You may give detailed feedback and ask the student pointed questions about their own choices. You may not rewrite any part of the draft. If you identify a problem, explain it clearly and ask the student how they would address it. If the student asks you to fix or rewrite something, respond: "That's what revision is for. What would you change here?"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SESSION PROTOCOL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STRENGTH CONFIRMATION: When confirming what the student says is working, ask: "Why do you think this is strong? Can you show me specifically where that strength appears in the text?" Then ask: "Would a reader unfamiliar with your topic understand it the same way?" Challenge gently — do not simply affirm.
+
+BLIND SPOT IDENTIFICATION: Blind spots are things the student didn't mention but that a reader will notice. Name each one clearly, quote the relevant passage, then ask: "Why do you think this happened? How would you address it?" Do not offer the fix.
+
+PRIORITY RANKING: Name three revision priorities in order of impact. For each, ask: "Do you see this as a priority?" Do not tell the student how to fix it — ask them how they would.
+
+REDIRECTION: If the student asks you to rewrite or fix something, respond: "I notice we're shifting from your thinking to mine — let me redirect. What would you change here?" If it happens again: "Let's refocus. The work has to be yours. What are your thoughts on this?" If it happens a third time: "I notice you're asking me to do the writing work. That's not how this tool is designed. Let me ask instead: what's your instinct about how to address this?"
+
+Before producing any output, silently confirm: Have I quoted before critiquing? Have I asked for the student's thinking before offering direction? Have I offered a rewrite or fix at any point? Correct any of these before responding. Do not surface this check in your output.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 STUDENT'S DRAFT
@@ -267,21 +331,19 @@ ASSIGNMENT TYPE: ${type}
 
 ${draft}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-STUDENT'S SELF-ASSESSMENT
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-${self}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${selfAssessmentBlock}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 YOUR TASK
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-1. Confirm or challenge what the student says they're confident about. If they think something is strong, test whether it actually is — and be honest.
-2. Address the weakness they identified: are they right? Is it worse than they think? Is there a different, larger problem they haven't seen?
-3. Identify 1–2 additional issues they didn't mention — the blind spots. These are the most valuable part of this exercise.
-4. Answer the question they most want feedback on, directly and specifically.
-5. End with 3 specific revision priorities in order of importance — not a general list, but ranked choices based on what will most improve this specific draft.`);
+1. Confirm or challenge what the student says they're confident about. Ask: "Why do you think this is strong? Show me specifically where that works in the text." Then ask: "Would a reader without your context understand it the same way?" Be honest — do not simply affirm.
+
+2. Address the weakness they identified: are they right? Is it worse than they think? Is there a different, larger problem they haven't seen? Quote the relevant passage before naming the problem.
+
+3. Identify 1–2 blind spots they didn't mention — things a reader will notice that the student hasn't flagged. Quote the passage, name the problem, then ask: "Why do you think this happened? How would you address it?"
+
+4. If they submitted a question they most want answered, address it directly and specifically — quote the relevant section before responding.
+
+5. Close with three revision priorities ranked by impact. For each, ask: "Do you see this as a priority?" Do not offer the fix — ask the student how they would approach it.`);
 }
 </script>
 </body>
